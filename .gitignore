@@ -1,0 +1,146 @@
+# ======================
+
+# 🌍 GLOBAL
+
+# ======================
+
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.bak
+
+# ======================
+
+# 🧰 EDITORES / IDE
+
+# ======================
+
+.vscode/
+.idea/
+**/.idea/
+**/*.iml
+
+# ======================
+
+# 🔐 VARIABLES DE ENTORNO
+
+# ======================
+
+**/.env
+**/.env.*
+*.pem
+*.key
+
+# ======================
+
+# 📦 NODE / REACT NATIVE
+
+# ======================
+
+**/node_modules/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-lock.yaml
+
+# Expo / Metro / RN builds
+
+**/.expo/
+**/.expo-shared/
+**/dist/
+**/web-build/
+**/coverage/
+
+# React Native iOS
+
+**/ios/Pods/
+**/ios/build/
+**/ios/DerivedData/
+**/*.xcworkspace
+**/*.xcuserdata
+
+# React Native Android
+
+**/android/app/build/
+**/android/build/
+
+# ======================
+
+# 🤖 ANDROID / KOTLIN
+
+# ======================
+
+**/.gradle/
+**/local.properties
+**/*.keystore
+**/*.jks
+
+# Android build outputs
+
+**/build/
+**/app/build/
+**/out/
+**/.cxx/
+**/.externalNativeBuild/
+
+# Android Studio captures
+
+**/captures/
+
+# ======================
+
+# 🐦 FLUTTER / DART
+
+# ======================
+
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
+**/.flutter/
+
+# Flutter build outputs
+
+**/build/
+
+# Flutter generated (no versionar)
+
+**/generated_plugin_registrant.dart
+
+# iOS (Flutter)
+
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+
+# ======================
+
+# 🧪 TEST / COVERAGE
+
+# ======================
+
+**/coverage/
+**/*.lcov
+
+# ======================
+
+# 📦 ARCHIVOS COMPRIMIDOS
+
+# ======================
+
+*.zip
+*.tar.gz
+*.rar
+
+# ======================
+
+# 🚫 EXCEPCIONES ÚTILES (opcional)
+
+# ======================
+
+# Mantener ejemplos de env si existen
+
+!**/.env.example
