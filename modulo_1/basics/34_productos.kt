@@ -49,6 +49,9 @@ fun main() {
     CatalogoProductos.agregarProducto("Mouse inalámbrico",  29.99,  0, 1)
     CatalogoProductos.agregarProducto("Monitor 27\"",      349.99,  5, 2)
     CatalogoProductos.agregarProducto("Auriculares BT",    149.99,  8, 3)
+    CatalogoProductos.agregarProducto("Mouse",              18.90,  7, 2)
+    CatalogoProductos.agregarProducto("Pantalla",           115.99, 2, 3)
+    CatalogoProductos.agregarProducto("Parlantes,           39.99, 3, 4)
 
     println("=== Todos los productos ===")
     CatalogoProductos.listar().forEach { p ->
