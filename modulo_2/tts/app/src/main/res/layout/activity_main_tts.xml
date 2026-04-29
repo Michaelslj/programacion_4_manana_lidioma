@@ -5,13 +5,22 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivityHelloWorld">
+    tools:context=".MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal">
+
+        <EditText
+            android:id="@+id/editTextText"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="50dp"
+            android:ems="10"
+            android:hint="escribe tu nombre"
+            android:inputType="text" />
 
         <TextView
             android:id="@+id/textView"
@@ -26,15 +35,6 @@
             android:layout_height="200dp"
             android:layout_marginTop="50dp"
             app:srcCompat="@drawable/logo_ute" />
-
-        <EditText
-            android:id="@+id/editTextText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:ems="10"
-            android:hint="escribe tu nombre"
-            android:inputType="text" />
 
         <Button
             android:id="@+id/button"
