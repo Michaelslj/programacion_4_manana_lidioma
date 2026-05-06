@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import com.ute.compose.ui.*
 import com.ute.compose.ui.S01_SaludoScreen
+import com.ute.compose.ui.material3.Paso01SumaScreen
+import com.ute.contactos.ui.Paso01_TextFieldScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,13 +18,14 @@ class MainActivity : ComponentActivity() {
                 // ◀ CAMBIA AQUÍ para probar cada sección:
                 // S01_SaludoScreen()
                 // S02_TextScreen()
-                S03_ButtonScreen()
+                // S03_ButtonScreen()
                 // S04_LayoutScreen()
                 // S05_ModifierScreen()
                 // S06_EstadoScreen()
                 // S07_StateHoistingScreen()
                 // S08_BienvenidaScreen()
+                // Paso01_TextFieldScreen()
+                Paso01SumaScreen()
             }
         }
-    }
-}
+    }}
