@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import com.ute.compose.ui.*
 import com.ute.compose.ui.S01_SaludoScreen
 import com.ute.compose.ui.material3.Paso01SumaScreen
+import com.ute.compose.ui.material3.ProductoScreen
 import com.ute.contactos.ui.Paso01_TextFieldScreen
 
 class MainActivity : ComponentActivity() {
@@ -25,7 +26,13 @@ class MainActivity : ComponentActivity() {
                 // S07_StateHoistingScreen()
                 // S08_BienvenidaScreen()
                 // Paso01_TextFieldScreen()
-                Paso01SumaScreen()
+                // Paso01SumaScreen()
+                // Paso02_CardScreen()
+                // Paso03_LazyColumnScreen()
+                // Paso04_ScaffoldScreen()
+                // Paso05_NavBarScreen()
+                Paso06_DialogosScreen()
+                //ProductoScreen()
             }
         }
     }}
