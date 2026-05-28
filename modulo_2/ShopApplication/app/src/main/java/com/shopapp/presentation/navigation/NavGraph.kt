@@ -22,8 +22,8 @@ import com.shopapp.presentation.ui.auth.LoginScreen
 import com.shopapp.presentation.ui.auth.RegisterScreen
 import com.shopapp.presentation.ui.uipublic.catalog.CatalogScreen
 import com.shopapp.presentation.ui.uipublic.home.HomeScreen
-import com.shopapp.presentation.ui.public.product.ProductDetailScreen
-import com.shopapp.presentation.ui.public.cart.CartBottomSheet
+import com.shopapp.presentation.ui.uipublic.product.ProductDetailScreen
+import com.shopapp.presentation.ui.uipublic.cart.CartBottomSheet
 import com.shopapp.presentation.viewmodel.AuthViewModel
 import com.shopapp.presentation.viewmodel.CartViewModel
 import com.shopapp.theme.Surface
