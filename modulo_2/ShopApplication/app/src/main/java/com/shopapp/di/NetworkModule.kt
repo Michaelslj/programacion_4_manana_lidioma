@@ -4,12 +4,12 @@ import com.shopapp.BuildConfig
 import com.shopapp.data.local.TokenDataStore
 import com.shopapp.data.remote.api.AuthApi
 import com.shopapp.data.remote.api.CategoryApi
+import com.shopapp.data.remote.api.OrderApi
 import com.shopapp.data.remote.api.ProductApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -62,4 +62,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideProductApi(retrofit: Retrofit): ProductApi = retrofit.create(ProductApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideOrderApi(retrofit: Retrofit): OrderApi = retrofit.create(OrderApi::class.java)
 }

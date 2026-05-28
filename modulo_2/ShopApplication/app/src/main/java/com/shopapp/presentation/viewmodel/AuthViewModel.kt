@@ -3,7 +3,6 @@ package com.shopapp.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.shopapp.data.local.TokenDataStore
 import com.shopapp.domain.model.LoggedUser
 import com.shopapp.domain.repository.AuthRepository
 import com.shopapp.presentation.ui.auth.AuthUiState
@@ -15,7 +14,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val tokenDataStore: TokenDataStore,
 ) : ViewModel() {
 
     // ── Estado de la UI ───────────────────────────────────────
@@ -28,11 +26,19 @@ class AuthViewModel @Inject constructor(
 
     val isAuthenticated: StateFlow<Boolean> = _currentUser
         .map { it != null }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = false
+        )
 
     val isStaff: StateFlow<Boolean> = _currentUser
         .map { it?.isStaff == true }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = false
+        )
 
     // ── Estado de carga inicial ───────────────────────────────
     private val _isCheckingSession = MutableStateFlow(true)

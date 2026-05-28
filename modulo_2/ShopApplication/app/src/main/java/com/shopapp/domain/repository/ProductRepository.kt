@@ -1,9 +1,6 @@
 // domain/repository/ProductRepository.kt
 package com.shopapp.domain.repository
 
-import com.shopapp.data.remote.dto.PaginatedDto
-import com.shopapp.data.remote.dto.ProductStatsDto
-import com.shopapp.data.remote.dto.RestockResponseDto
 import com.shopapp.domain.model.Product
 import com.shopapp.domain.model.ProductFilters
 import com.shopapp.domain.model.ProductPayload
