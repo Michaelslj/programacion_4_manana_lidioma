@@ -21,10 +21,10 @@ class AuthViewModel @Inject constructor(
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
     // ── Usuario logueado (Flow reactivo) ──────────────────────
-    private val _currentUser = MutableStateFlow<LoggedUser?>(null)
-    val currentUser: StateFlow<LoggedUser?> = _currentUser.asStateFlow()
+    val currentUser: StateFlow<LoggedUser?> = authRepository.currentUser
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    val isAuthenticated: StateFlow<Boolean> = _currentUser
+    val isAuthenticated: StateFlow<Boolean> = currentUser
         .map { it != null }
         .stateIn(
             scope = viewModelScope,
@@ -32,7 +32,7 @@ class AuthViewModel @Inject constructor(
             initialValue = false
         )
 
-    val isStaff: StateFlow<Boolean> = _currentUser
+    val isStaff: StateFlow<Boolean> = currentUser
         .map { it?.isStaff == true }
         .stateIn(
             scope = viewModelScope,
@@ -45,25 +45,12 @@ class AuthViewModel @Inject constructor(
     val isCheckingSession: StateFlow<Boolean> = _isCheckingSession.asStateFlow()
 
     init {
-        restoreSession()
-    }
-
-    // Restaurar sesión desde DataStore al arrancar la app
-    private fun restoreSession() {
+        // Marcamos como listo una vez que el Flow haya tenido oportunidad de emitir
         viewModelScope.launch {
-            try {
-                val snapshot = authRepository.getStoredUser()
-                if (snapshot != null && authRepository.isLoggedIn()) {
-                    _currentUser.value = LoggedUser(
-                        id       = snapshot.id,
-                        username = snapshot.username,
-                        email    = snapshot.email,
-                        isStaff  = snapshot.isStaff,
-                    )
-                }
-            } finally {
-                _isCheckingSession.value = false
-            }
+            currentUser.filter { it != null }.firstOrNull() 
+            // O simplemente esperamos un poco si queremos ser seguros, 
+            // pero stateIn con Eagerly ya debería tener el valor inicial.
+            _isCheckingSession.value = false
         }
     }
 
@@ -74,7 +61,6 @@ class AuthViewModel @Inject constructor(
             _uiState.value = AuthUiState.Loading
             authRepository.login(username.trim(), password)
                 .onSuccess { user ->
-                    _currentUser.value = user
                     _uiState.value     = AuthUiState.Success(user)
                 }
                 .onFailure { e ->
@@ -90,7 +76,6 @@ class AuthViewModel @Inject constructor(
             _uiState.value = AuthUiState.Loading
             authRepository.register(username.trim(), email.trim(), password, password2)
                 .onSuccess { user ->
-                    _currentUser.value = user
                     _uiState.value     = AuthUiState.Success(user)
                 }
                 .onFailure { e ->
@@ -103,7 +88,6 @@ class AuthViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             authRepository.logout()
-            _currentUser.value = null
             _uiState.value     = AuthUiState.Idle
         }
     }

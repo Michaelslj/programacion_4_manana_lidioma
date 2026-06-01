@@ -3,7 +3,10 @@ package com.shopapp.domain.repository
 import com.shopapp.data.local.TokenDataStore
 import com.shopapp.domain.model.LoggedUser
 
+import kotlinx.coroutines.flow.Flow
+
 interface AuthRepository {
+    val currentUser: Flow<LoggedUser?>
     suspend fun login(username: String, password: String): Result<LoggedUser>
     suspend fun register(
         username: String,

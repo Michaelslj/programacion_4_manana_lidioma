@@ -6,6 +6,7 @@ import com.shopapp.data.remote.api.AuthApi
 import com.shopapp.data.remote.api.CategoryApi
 import com.shopapp.data.remote.api.OrderApi
 import com.shopapp.data.remote.api.ProductApi
+import com.shopapp.data.remote.api.UserApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,10 +24,14 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(tokenDataStore: TokenDataStore): OkHttpClient {
+    fun provideOkHttpClient(
+        tokenDataStore: TokenDataStore,
+        authApiProvider: javax.inject.Provider<AuthApi> // Usamos Provider para evitar dependencia circular
+    ): OkHttpClient {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
+
         return OkHttpClient.Builder()
             .addInterceptor(logging)
             .addInterceptor { chain ->
@@ -37,6 +42,38 @@ object NetworkModule {
                     }
                 }.build()
                 chain.proceed(request)
+            }
+            .authenticator { _, response ->
+                // Este bloque se ejecuta solo en errores 401
+                synchronized(this) {
+                    val refreshToken = runBlocking { tokenDataStore.getRefreshToken() }
+                    if (refreshToken == null) return@authenticator null
+
+                    // Intentar refrescar el token
+                    val refreshResponse = runBlocking {
+                        authApiProvider.get().refreshToken(
+                            com.shopapp.data.remote.dto.TokenRefreshRequest(refreshToken)
+                        )
+                    }
+
+                    if (refreshResponse.isSuccessful) {
+                        val newTokens = refreshResponse.body()!!
+                        runBlocking {
+                            tokenDataStore.saveAccessToken(newTokens.access)
+                            if (newTokens.refresh != null) {
+                                tokenDataStore.saveTokens(newTokens.access, newTokens.refresh)
+                            }
+                        }
+                        // Reintentar la petición original con el nuevo token
+                        response.request.newBuilder()
+                            .header("Authorization", "Bearer ${newTokens.access}")
+                            .build()
+                    } else {
+                        // Si el refresh también falla, cerrar sesión
+                        runBlocking { tokenDataStore.clearSession() }
+                        null
+                    }
+                }
             }
             .build()
     }
@@ -66,4 +103,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOrderApi(retrofit: Retrofit): OrderApi = retrofit.create(OrderApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUserApi(retrofit: Retrofit): UserApi = retrofit.create(UserApi::class.java)
 }
