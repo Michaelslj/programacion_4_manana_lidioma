@@ -6,16 +6,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
 import com.shopapp.presentation.components.LoadingScreen
-import com.shopapp.presentation.ui.admin.dashboard.AdminScaffold
+import com.shopapp.presentation.ui.admin.AdminScaffold
 import com.shopapp.presentation.ui.admin.categories.CategoriesAdminScreen
 import com.shopapp.presentation.ui.admin.dashboard.DashboardScreen
 import com.shopapp.presentation.ui.admin.orders.OrderAdminDetailScreen
 import com.shopapp.presentation.ui.admin.orders.OrdersAdminScreen
 import com.shopapp.presentation.ui.admin.products.ProductsAdminScreen
+import com.shopapp.presentation.ui.admin.users.UsersAdminScreen
 import com.shopapp.presentation.ui.auth.LoginScreen
 import com.shopapp.presentation.ui.auth.RegisterScreen
 import com.shopapp.presentation.ui.client.orders.OrderDetailScreen
@@ -44,6 +46,7 @@ fun NavGraph(
     val currentUser       by authViewModel.currentUser.collectAsState()
 
     var showCart         by remember { mutableStateOf(false) }
+    var confirmedOrderId by remember { mutableStateOf<Int?>(null) }
 
     if (isCheckingSession) {
         LoadingScreen("Iniciando ShopApp...")
@@ -79,6 +82,7 @@ fun NavGraph(
         },
     ) { innerPadding ->
 
+        // ── BottomSheet carrito
         if (showCart) {
             CartBottomSheet(
                 cartViewModel   = cartViewModel,
@@ -89,6 +93,7 @@ fun NavGraph(
                     navController.navigate(Screen.Login.route)
                 },
                 onOrderSuccess = { orderId ->
+                    confirmedOrderId = orderId
                     showCart = false
                 },
             )
@@ -100,6 +105,7 @@ fun NavGraph(
             modifier         = Modifier.padding(innerPadding),
         ) {
 
+            // ── LOGIN ───────────────────────────────
             composable(Screen.Login.route) {
                 LoginScreen(
                     onLoginSuccess = { staff ->
@@ -113,6 +119,7 @@ fun NavGraph(
                 )
             }
 
+            // ── REGISTER ────────────────────────────
             composable(Screen.Register.route) {
                 RegisterScreen(
                     onRegisterSuccess = { staff ->
@@ -126,6 +133,7 @@ fun NavGraph(
                 )
             }
 
+            // ── HOME ───────────────────────────────
             composable(Screen.Home.route) {
                 HomeScreen(
                     onProductClick = { id -> navController.navigate("product/$id") },
@@ -133,12 +141,14 @@ fun NavGraph(
                 )
             }
 
+            // ── CATALOGO ───────────────────────────
             composable(Screen.Catalog.route) {
                 CatalogScreen(
                     onProductClick = { id -> navController.navigate("product/$id") },
                 )
             }
 
+            // ── DETALLE PRODUCTO ───────────────────
             composable(
                 route     = "product/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.IntType }),
@@ -151,6 +161,7 @@ fun NavGraph(
                 )
             }
 
+            // ── ORDERS CLIENT ──────────────────────
             composable(Screen.Orders.route) {
                 if (!isAuthenticated) {
                     LaunchedEffect(Unit) {
@@ -165,6 +176,7 @@ fun NavGraph(
                 }
             }
 
+            // ── ORDER DETAIL CLIENT ────────────────
             composable(
                 route     = "orders/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.IntType }),
@@ -176,6 +188,7 @@ fun NavGraph(
                 )
             }
 
+            // ── PROFILE ────────────────────────────
             composable(Screen.Profile.route) {
                 if (!isAuthenticated) {
                     LaunchedEffect(Unit) {
@@ -195,6 +208,7 @@ fun NavGraph(
                 }
             }
 
+            // ── ADMIN DASHBOARD ────────────────────
             composable(Screen.AdminDashboard.route) {
                 if (!isStaff) {
                     LaunchedEffect(Unit) {
@@ -207,7 +221,7 @@ fun NavGraph(
                     currentRoute = Screen.AdminDashboard.route,
                     user         = currentUser,
                     title        = "Dashboard",
-                    onNavClick   = { route: String ->
+                    onNavClick   = { route ->
                         navController.navigate(route) {
                             launchSingleTop = true
                             restoreState    = true
@@ -220,15 +234,16 @@ fun NavGraph(
                             popUpTo(0) { inclusive = true }
                         }
                     },
-                ) { padding: PaddingValues ->
+                ) { padding ->
                     Box(modifier = Modifier.padding(padding)) {
                         DashboardScreen(
-                            onNavigate = { route: String -> navController.navigate(route) }
+                            onNavigate = { route -> navController.navigate(route) }
                         )
                     }
                 }
             }
 
+            // ── ADMIN CATEGORIES ───────────────────
             composable("admin/categories") {
                 if (!isStaff) {
                     LaunchedEffect(Unit) {
@@ -241,7 +256,7 @@ fun NavGraph(
                     currentRoute = "admin/categories",
                     user         = currentUser,
                     title        = "Categorías",
-                    onNavClick   = { route: String ->
+                    onNavClick   = { route ->
                         navController.navigate(route) { launchSingleTop = true }
                     },
                     onStoreClick = { navController.navigate(Screen.Home.route) },
@@ -250,14 +265,15 @@ fun NavGraph(
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }
                         }
-                    }
-                ) { padding: PaddingValues ->
+                    },
+                ) { padding ->
                     Box(modifier = Modifier.padding(padding)) {
                         CategoriesAdminScreen()
                     }
                 }
             }
 
+            // ── ADMIN PRODUCTS ─────────────────────
             composable("admin/products") {
                 if (!isStaff) {
                     LaunchedEffect(Unit) {
@@ -270,7 +286,7 @@ fun NavGraph(
                     currentRoute = "admin/products",
                     user         = currentUser,
                     title        = "Productos",
-                    onNavClick   = { route: String ->
+                    onNavClick   = { route ->
                         navController.navigate(route) { launchSingleTop = true }
                     },
                     onStoreClick = { navController.navigate(Screen.Home.route) },
@@ -279,14 +295,15 @@ fun NavGraph(
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }
                         }
-                    }
-                ) { padding: PaddingValues ->
+                    },
+                ) { padding ->
                     Box(modifier = Modifier.padding(padding)) {
                         ProductsAdminScreen()
                     }
                 }
             }
 
+            // ── ADMIN ORDERS ───────────────────────
             composable("admin/orders") {
                 if (!isStaff) {
                     LaunchedEffect(Unit) {
@@ -301,7 +318,7 @@ fun NavGraph(
                     currentRoute = "admin/orders",
                     user         = currentUser,
                     title        = "Pedidos",
-                    onNavClick   = { route: String ->
+                    onNavClick   = { route ->
                         navController.navigate(route) { launchSingleTop = true }
                     },
                     onStoreClick = { navController.navigate(Screen.Home.route) },
@@ -310,11 +327,11 @@ fun NavGraph(
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }
                         }
-                    }
-                ) { padding: PaddingValues ->
+                    },
+                ) { padding ->
                     Box(modifier = Modifier.padding(padding)) {
                         OrdersAdminScreen(
-                            onOrderDetail = { id: Int ->
+                            onOrderDetail = { id ->
                                 navController.navigate("admin/orders/$id")
                             },
                             viewModel = ordersAdminVm,
@@ -323,6 +340,7 @@ fun NavGraph(
                 }
             }
 
+            // ── ADMIN ORDER DETAIL ─────────────────
             composable(
                 route     = "admin/orders/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.IntType }),
@@ -346,7 +364,7 @@ fun NavGraph(
                     currentRoute = "admin/orders",
                     user         = currentUser,
                     title        = "Detalle pedido #$id",
-                    onNavClick   = { route: String ->
+                    onNavClick   = { route ->
                         navController.navigate(route) { launchSingleTop = true }
                     },
                     onStoreClick = { navController.navigate(Screen.Home.route) },
@@ -355,13 +373,13 @@ fun NavGraph(
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }
                         }
-                    }
-                ) { padding: PaddingValues ->
+                    },
+                ) { padding ->
                     Box(modifier = Modifier.padding(padding)) {
                         OrderAdminDetailScreen(
                             orderId = id,
                             onBack  = { navController.popBackStack() },
-                            onStatusChange = { ordId: Int, newStatus: com.shopapp.domain.model.OrderStatus ->
+                            onStatusChange = { ordId, newStatus ->
                                 ordersAdminVm.changeStatus(ordId, newStatus)
                             },
                         )
@@ -369,6 +387,7 @@ fun NavGraph(
                 }
             }
 
+            // ── ADMIN USERS (CORREGIDO) ────────────
             composable("admin/users") {
                 if (!isStaff) {
                     LaunchedEffect(Unit) {
@@ -381,8 +400,8 @@ fun NavGraph(
                     currentRoute = "admin/users",
                     user         = currentUser,
                     title        = "Usuarios",
-                    onNavClick   = { r: String ->
-                        navController.navigate(r) { launchSingleTop = true }
+                    onNavClick   = { route ->
+                        navController.navigate(route) { launchSingleTop = true }
                     },
                     onStoreClick = { navController.navigate(Screen.Home.route) },
                     onLogout     = {
@@ -390,18 +409,14 @@ fun NavGraph(
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }
                         }
-                    }
-                ) { padding: PaddingValues ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text("Usuarios — próximo módulo", color = TextSecondary)
+                    },
+                ) { padding ->
+                    Box(modifier = Modifier.padding(padding)) {
+                        UsersAdminScreen()
                     }
                 }
             }
         }
     }
 }
+
