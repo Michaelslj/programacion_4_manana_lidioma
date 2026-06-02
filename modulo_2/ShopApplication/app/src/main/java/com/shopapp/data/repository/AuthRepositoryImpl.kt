@@ -5,7 +5,9 @@ import com.shopapp.data.remote.api.AuthApi
 import com.shopapp.data.remote.dto.*
 import com.shopapp.domain.model.LoggedUser
 import com.shopapp.domain.repository.AuthRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,6 +16,12 @@ class AuthRepositoryImpl @Inject constructor(
     private val api: AuthApi,
     private val tokenDataStore: TokenDataStore,
 ) : AuthRepository {
+
+    override val currentUser: Flow<LoggedUser?> = tokenDataStore.userSnapshot.map { snapshot ->
+        snapshot?.let {
+            LoggedUser(it.id, it.username, it.email, it.isStaff)
+        }
+    }
 
     override suspend fun login(username: String, password: String): Result<LoggedUser> =
         runCatching {
