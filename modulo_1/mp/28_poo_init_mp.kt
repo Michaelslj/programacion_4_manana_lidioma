@@ -1,17 +1,24 @@
-class Producto(val nombre: String, val categoria: String) {
-    val nombreNormalizado: String
-    val categoriaMayuscula: String
+class ProductoInventario(val codigo: String, val precioBase: Double) {
+    val codigoLimpio: String
+    val precioConIva: Double
+
     init {
-        require(nombre.isNotBlank()) { "El nombre no puede estar vacío" }
-        require(categoria.isNotBlank()) { "La categoría no puede estar vacía" }
-        nombreNormalizado = nombre.trim().lowercase()
-        categoriaMayuscula = categoria.uppercase()
+        // Validaciones obligatorias al instanciar la clase
+        require(codigo.isNotBlank()) { "El código del producto no puede estar vacío" }
+        require(precioBase > 0.0) { "El precio base debe ser mayor a cero" }
+
+        // Inicialización de propiedades derivadas
+        codigoLimpio = codigo.trim().uppercase()
+        precioConIva = precioBase * 1.15
     }
 }
+
 fun main() {
+    val producto = ProductoInventario("  prod-102  ", 100.0)
 
-    val p = Producto("  Laptop Gamer  ", "electronica")
+    println(producto.codigoLimpio)   // PROD-102
+    println(producto.precioConIva)   // 115.0
 
-    println(p.nombreNormalizado)   // laptop gamer
-    println(p.categoriaMayuscula)  // ELECTRONICA
+    // Si intentas desatar un error de validación descommentando esto:
+    // val productoInvalido = ProductoInventario("", -5.0) 
 }
