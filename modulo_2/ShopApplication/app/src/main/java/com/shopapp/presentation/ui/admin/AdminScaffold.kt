@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -220,9 +221,23 @@ private fun AdminDrawerContent(
         Spacer(Modifier.weight(1f))
         HorizontalDivider(color = Border, thickness = 0.5.dp)
 
+        // Volver a la tienda
+        NavigationDrawerItem(
+            icon     = { Icon(Icons.Default.Store, contentDescription = "Tienda", tint = Accent) },
+            label    = {
+                Text("Ir a la tienda", color = Accent, fontWeight = FontWeight.SemiBold)
+            },
+            selected = false,
+            onClick  = onStoreClick,
+            colors   = NavigationDrawerItemDefaults.colors(
+                unselectedContainerColor = androidx.compose.ui.graphics.Color.Transparent,
+            ),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp),
+        )
+
         // Cerrar sesión
         NavigationDrawerItem(
-            icon     = { Icon(Icons.Default.Logout, contentDescription = "Salir", tint = Error) },
+            icon     = { Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Salir", tint = Error) },
             label    = {
                 Text("Cerrar sesión", color = Error, fontWeight = FontWeight.SemiBold)
             },

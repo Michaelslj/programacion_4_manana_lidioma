@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -50,7 +51,7 @@ fun OrderDetailScreen(
         is OrderDetailUiState.Loading ->
             LoadingScreen("Cargando pedido...")
         is OrderDetailUiState.Error   ->
-            ErrorScreen(s.message, onRetry = { viewModel.load(orderId) })
+            ErrorScreen(s.message) { viewModel.load(orderId) }
         is OrderDetailUiState.Success ->
             OrderDetailContent(order = s.order, onBack = onBack)
     }
@@ -66,7 +67,7 @@ private fun OrderDetailContent(order: Order, onBack: () -> Unit) {
 
     val isCancelled = order.status == OrderStatus.CANCELLED
     val currentStep = PROGRESS_STEPS.indexOf(order.status).coerceAtLeast(0)
-    val taxAmount   = order.total - order.total / 1.15
+    val taxAmount   = order.total - (order.total / 1.15)
     val subtotal    = order.total - taxAmount
 
     Scaffold(
@@ -85,7 +86,7 @@ private fun OrderDetailContent(order: Order, onBack: () -> Unit) {
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = TextPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = TextPrimary)
                     }
                 },
                 actions = { StatusBadge(order.status, modifier = Modifier.padding(end = 16.dp)) },
@@ -179,7 +180,6 @@ private fun OrderProgressBar(steps: List<OrderStatus>, currentStep: Int) {
                 steps.forEachIndexed { index, step ->
                     val isDone    = index <= currentStep
                     val isCurrent = index == currentStep
-                    val color     = if (isDone) Accent else Border
 
                     // Nodo
                     Column(
@@ -195,7 +195,7 @@ private fun OrderProgressBar(steps: List<OrderStatus>, currentStep: Int) {
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text       = if (isDone) "✓" else "${index + 1}",
+                                text       = if (isDone) "✓" else (index + 1).toString(),
                                 color      = if (isDone) AccentOnDark else TextFaint,
                                 fontSize   = if (isCurrent) 14.sp else 12.sp,
                                 fontWeight = FontWeight.Bold,
