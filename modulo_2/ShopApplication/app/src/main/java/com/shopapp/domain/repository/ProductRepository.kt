@@ -1,6 +1,7 @@
 // domain/repository/ProductRepository.kt
 package com.shopapp.domain.repository
 
+import android.net.Uri
 import com.shopapp.domain.model.Product
 import com.shopapp.domain.model.ProductFilters
 import com.shopapp.domain.model.ProductPayload
@@ -13,4 +14,5 @@ interface ProductRepository {
     suspend fun deleteProduct(id: Int): Result<Unit>
     suspend fun restock(id: Int, quantity: Int): Result<Int>
     suspend fun getStats(): Result<Map<String, Any>>
+    suspend fun uploadProductImage(id: Int, uri: Uri): Result<String>
 }
