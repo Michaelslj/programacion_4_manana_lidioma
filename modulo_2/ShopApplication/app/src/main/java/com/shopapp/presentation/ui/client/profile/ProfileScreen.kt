@@ -1,12 +1,14 @@
-// presentation/ui/client/profile/ProfileScreen.kt
 package com.shopapp.presentation.ui.client.profile
 
+import androidx.compose.foundation.clickable // Import necesario
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward // Import necesario
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Send // Import necesario
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,9 +21,10 @@ import com.shopapp.presentation.viewmodel.ProfileViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onEditProfile: () -> Unit       = {},
-    onLogout:      () -> Unit       = {},
-    viewModel:     ProfileViewModel = hiltViewModel(),
+    onEditProfile: () -> Unit = {},
+    onLogout: () -> Unit = {},
+    onSendNotification: () -> Unit = {}, // ← nuevo parámetro
+    viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -33,21 +36,21 @@ fun ProfileScreen(
     }
 
     Scaffold(
-        topBar        = { TopAppBar(title = { Text("Mi perfil") }) },
-        snackbarHost  = { SnackbarHost(snackbarHostState) },
+        topBar = { TopAppBar(title = { Text("Mi perfil") }) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         when {
             state.isLoading -> {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier         = Modifier.fillMaxSize().padding(padding),
+                    modifier = Modifier.fillMaxSize().padding(padding),
                 ) { CircularProgressIndicator() }
             }
 
             state.error != null -> {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier         = Modifier.fillMaxSize().padding(padding),
+                    modifier = Modifier.fillMaxSize().padding(padding),
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(state.error ?: "Error", color = MaterialTheme.colorScheme.error)
@@ -62,7 +65,7 @@ fun ProfileScreen(
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier            = Modifier
+                    modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
                         .verticalScroll(rememberScrollState())
@@ -72,21 +75,21 @@ fun ProfileScreen(
 
                     // ── Avatar ───────────────────────────────────────────────
                     AvatarSection(
-                        avatarUrl       = state.avatarUrl,
-                        username        = profile?.username ?: "",
-                        isUploading     = state.isUploading,
+                        avatarUrl = state.avatarUrl,
+                        username = profile?.username ?: "",
+                        isUploading = state.isUploading,
                         onImageSelected = { uri -> viewModel.uploadAvatar(uri) },
                     )
 
                     Spacer(Modifier.height(12.dp))
 
                     Text(
-                        text       = profile?.username ?: "—",
-                        style      = MaterialTheme.typography.titleLarge,
+                        text = profile?.username ?: "—",
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
-                        text  = profile?.email ?: "—",
+                        text = profile?.email ?: "—",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -98,11 +101,39 @@ fun ProfileScreen(
                     }
 
                     Spacer(Modifier.height(24.dp))
-                    HorizontalDivider()
+
+                    // ── Opción de Staff (Nueva) ──────────────────────────────
+                    if (profile?.isStaff == true) {
+                        HorizontalDivider()
+                        ListItem(
+                            headlineContent = {
+                                Text("Enviar notificación", fontWeight = FontWeight.Medium)
+                            },
+                            supportingContent = {
+                                Text("Envía un correo a uno o todos los usuarios")
+                            },
+                            leadingContent = {
+                                Icon(
+                                    imageVector = Icons.Default.Send,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                )
+                            },
+                            trailingContent = {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                    contentDescription = null,
+                                )
+                            },
+                            modifier = Modifier.clickable(onClick = onSendNotification),
+                        )
+                        HorizontalDivider()
+                    }
+
                     Spacer(Modifier.height(16.dp))
 
                     OutlinedButton(
-                        onClick  = onEditProfile,
+                        onClick = onEditProfile,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Icon(Icons.Default.Edit, null, modifier = Modifier.size(18.dp))
@@ -113,9 +144,9 @@ fun ProfileScreen(
                     Spacer(Modifier.height(8.dp))
 
                     OutlinedButton(
-                        onClick  = onLogout,
+                        onClick = onLogout,
                         modifier = Modifier.fillMaxWidth(),
-                        colors   = ButtonDefaults.outlinedButtonColors(
+                        colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = MaterialTheme.colorScheme.error,
                         ),
                     ) {
