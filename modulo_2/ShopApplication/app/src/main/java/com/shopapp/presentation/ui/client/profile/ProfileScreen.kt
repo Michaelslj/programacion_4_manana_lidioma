@@ -1,14 +1,14 @@
 package com.shopapp.presentation.ui.client.profile
 
-import androidx.compose.foundation.clickable // Import necesario
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward // Import necesario
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Send // Import necesario
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,7 +23,8 @@ import com.shopapp.presentation.viewmodel.ProfileViewModel
 fun ProfileScreen(
     onEditProfile: () -> Unit = {},
     onLogout: () -> Unit = {},
-    onSendNotification: () -> Unit = {}, // ← nuevo parámetro
+    onSendNotification: () -> Unit = {},
+    isAdmin: Boolean = false,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -62,6 +63,8 @@ fun ProfileScreen(
 
             else -> {
                 val profile = state.profile
+                // Usamos isAdmin (del TokenDataStore) como fuente principal por si el perfil aún no carga
+                val isActuallyAdmin = isAdmin || profile?.isStaff == true
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -96,14 +99,14 @@ fun ProfileScreen(
 
                     Spacer(Modifier.height(4.dp))
 
-                    if (profile?.isStaff == true) {
+                    if (isActuallyAdmin) {
                         SuggestionChip(onClick = {}, label = { Text("Staff") })
                     }
 
                     Spacer(Modifier.height(24.dp))
 
                     // ── Opción de Staff (Nueva) ──────────────────────────────
-                    if (profile?.isStaff == true) {
+                    if (isActuallyAdmin) {
                         HorizontalDivider()
                         ListItem(
                             headlineContent = {

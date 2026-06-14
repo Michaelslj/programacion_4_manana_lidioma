@@ -35,7 +35,7 @@ data class ToggleActiveResponseDto(
 data class SendNotificationDto(
     @SerializedName("subject") val subject: String,
     @SerializedName("message") val message: String,
-    @SerializedName("user_id") val userId:  Int? = null,  // null → envío masivo
+    @SerializedName("user_id") val userId:  Int? = null,
 )
 
 /**

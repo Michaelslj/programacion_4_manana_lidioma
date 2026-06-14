@@ -227,6 +227,7 @@ fun NavGraph(
                             }
                         },
                         onSendNotification = { navController.navigate(Screen.SendNotification.route) },
+                        isAdmin = isStaff, // ← pasamos el estado de staff
                     )
                 }
             }
