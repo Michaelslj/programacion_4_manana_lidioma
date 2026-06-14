@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -22,9 +21,10 @@ import com.shopapp.theme.*
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess:  (isStaff: Boolean) -> Unit,
+    onLoginSuccess:       (isStaff: Boolean) -> Unit,
     onNavigateToRegister: () -> Unit,
-    viewModel: AuthViewModel = hiltViewModel(),
+    onForgotPassword:     () -> Unit = {},
+    viewModel:            AuthViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -127,6 +127,13 @@ fun LoginScreen(
                         isLoading = isLoading,
                         enabled   = username.isNotBlank() && password.isNotBlank(),
                     )
+
+                    TextButton(
+                        onClick  = onForgotPassword,
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                    ) {
+                        Text("¿Olvidaste tu contraseña?")
+                    }
                 }
             }
 

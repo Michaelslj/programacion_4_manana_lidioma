@@ -45,11 +45,11 @@ class AuthViewModel @Inject constructor(
     val isCheckingSession: StateFlow<Boolean> = _isCheckingSession.asStateFlow()
 
     init {
-        // Marcamos como listo una vez que el Flow haya tenido oportunidad de emitir
+        // Marcamos como listo una vez que el Flow haya tenido oportunidad de emitir su primer valor
         viewModelScope.launch {
-            currentUser.filter { it != null }.firstOrNull() 
-            // O simplemente esperamos un poco si queremos ser seguros, 
-            // pero stateIn con Eagerly ya debería tener el valor inicial.
+            // No usamos filter { it != null } porque si no hay usuario (null), 
+            // la app se quedaría cargando infinitamente.
+            currentUser.first()
             _isCheckingSession.value = false
         }
     }
