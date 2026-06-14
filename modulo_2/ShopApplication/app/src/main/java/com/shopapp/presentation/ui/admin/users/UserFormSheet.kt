@@ -60,7 +60,7 @@ fun UserFormSheet(
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             Text(
-                text       = if (isEdit) "Editar: ${initial?.username}" else "Nuevo usuario",
+                text       = if (initial != null) "Editar: ${initial.username}" else "Nuevo usuario",
                 style      = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color      = TextPrimary,
@@ -167,7 +167,7 @@ fun UserFormSheet(
                     enabled  = !isSaving,
                     modifier = Modifier.weight(1f).height(52.dp),
                     colors   = ButtonDefaults.outlinedButtonColors(contentColor = TextSecondary),
-                    border   = ButtonDefaults.outlinedButtonBorder.copy(
+                    border   = ButtonDefaults.outlinedButtonBorder(!isSaving).copy(
                         brush = androidx.compose.ui.graphics.SolidColor(Border),
                     ),
                     shape    = MaterialTheme.shapes.medium,

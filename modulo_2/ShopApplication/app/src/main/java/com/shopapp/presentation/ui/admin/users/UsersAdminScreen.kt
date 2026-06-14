@@ -155,6 +155,17 @@ fun UsersAdminScreen(
                             onDelete       = { deleteTarget = user },
                         )
                     }
+
+                    // Botón Cargar más
+                    if (filtered.size < state.total) {
+                        item {
+                            Box(Modifier.fillMaxWidth().padding(vertical = 8.dp), Alignment.Center) {
+                                TextButton(onClick = viewModel::loadNextPage) {
+                                    Text("Cargar más usuarios (${filtered.size}/${state.total})", color = Accent)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -263,6 +274,19 @@ private fun UserAdminCard(
                         fontWeight = FontWeight.SemiBold,
                         color      = TextPrimary,
                     )
+                    // ID Badge
+                    Surface(
+                        color = Surface2,
+                        shape = MaterialTheme.shapes.extraSmall,
+                    ) {
+                        Text(
+                            "#${user.id}",
+                            color      = TextFaint,
+                            fontSize   = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier   = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        )
+                    }
                     // Badge staff
                     if (user.isStaff) {
                         Surface(

@@ -46,25 +46,9 @@ class UsersAdminViewModel @Inject constructor(
     private val _formState = MutableStateFlow<UserFormState>(UserFormState.Idle)
     val formState: StateFlow<UserFormState> = _formState.asStateFlow()
 
-    // Filtrado local combinado
+    // Ya no filtramos localmente, mostramos lo que viene del servidor
     val filtered: StateFlow<List<User>> = _state
-        .map { s ->
-            s.users
-                .filter { u ->
-                    s.search.isBlank() ||
-                            u.username.contains(s.search, ignoreCase = true) ||
-                            u.email.contains(s.search, ignoreCase = true)
-                }
-                .filter { u ->
-                    when (s.roleFilter) {
-                        UserRoleFilter.ALL      -> true
-                        UserRoleFilter.CLIENTS  -> !u.isStaff
-                        UserRoleFilter.STAFF    -> u.isStaff
-                        UserRoleFilter.ACTIVE   -> u.isActive
-                        UserRoleFilter.INACTIVE -> !u.isActive
-                    }
-                }
-        }
+        .map { it.users }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private var searchJob: Job? = null
@@ -74,7 +58,25 @@ class UsersAdminViewModel @Inject constructor(
     fun load() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-            repository.getUsers()
+            
+            val isStaffParam = when(_state.value.roleFilter) {
+                UserRoleFilter.STAFF -> true
+                UserRoleFilter.CLIENTS -> false
+                else -> null
+            }
+            
+            val isActiveParam = when(_state.value.roleFilter) {
+                UserRoleFilter.ACTIVE -> true
+                UserRoleFilter.INACTIVE -> false
+                else -> null
+            }
+
+            repository.getUsers(
+                search = _state.value.search.ifBlank { null },
+                isStaff = isStaffParam,
+                isActive = isActiveParam,
+                page = 1 // Por ahora cargamos la primera página de resultados
+            )
                 .onSuccess { (users, total) ->
                     _state.update { it.copy(users = users, total = total, isLoading = false) }
                 }
@@ -86,16 +88,55 @@ class UsersAdminViewModel @Inject constructor(
 
     fun setSearch(query: String) {
         _state.update { it.copy(search = query) }
-        // Debounce para búsqueda local (ya es instantánea, pero útil si se cambia a API)
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            delay(300)
-            // Búsqueda ya aplicada por el filtered StateFlow
+            delay(500) // Esperar a que el usuario termine de escribir
+            load()
         }
     }
 
     fun setRoleFilter(filter: UserRoleFilter) {
         _state.update { it.copy(roleFilter = filter) }
+        load()
+    }
+
+    fun loadNextPage() {
+        if (_state.value.isLoading) return
+        
+        val currentPage = (_state.value.users.size / 20) + 1 // Asumiendo 20 por página
+        
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            
+            val isStaffParam = when(_state.value.roleFilter) {
+                UserRoleFilter.STAFF -> true
+                UserRoleFilter.CLIENTS -> false
+                else -> null
+            }
+            
+            val isActiveParam = when(_state.value.roleFilter) {
+                UserRoleFilter.ACTIVE -> true
+                UserRoleFilter.INACTIVE -> false
+                else -> null
+            }
+
+            repository.getUsers(
+                search = _state.value.search.ifBlank { null },
+                isStaff = isStaffParam,
+                isActive = isActiveParam,
+                page = currentPage + 1
+            ).onSuccess { (newUsers, total) ->
+                _state.update { s ->
+                    s.copy(
+                        users = s.users + newUsers,
+                        total = total,
+                        isLoading = false
+                    )
+                }
+            }.onFailure { e ->
+                _state.update { it.copy(isLoading = false, error = e.message) }
+            }
+        }
     }
 
     // Toggle staff — optimista

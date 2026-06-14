@@ -36,3 +36,20 @@ data class TokenRefreshResponseDto(
     val access:  String,
     val refresh: String?,   // con ROTATE_REFRESH_TOKENS=True también devuelve nuevo refresh
 )
+
+
+data class PasswordResetRequestDto(
+    @SerializedName("email") val email: String,
+)
+
+data class PasswordResetConfirmDto(
+    @SerializedName("uid")           val uid:          String,
+    @SerializedName("token")         val token:        String,
+    @SerializedName("new_password")  val newPassword:  String,
+    @SerializedName("new_password2") val newPassword2: String,
+)
+
+
+data class MessageDto(
+    @SerializedName("detail") val detail: String,
+)
