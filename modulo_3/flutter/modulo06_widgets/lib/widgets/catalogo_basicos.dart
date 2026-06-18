@@ -317,7 +317,7 @@ class CatalogoBasicos extends StatelessWidget {
                   value: null, // 70 %
                   color: Colors.green,
                   strokeWidth: 6,
-                  backgroundColor: Colors.grey.shade200,
+                  backgroundColor: const Color(0xFFEEEEEE),
                 ),
               ),
               SizedBox(
@@ -328,7 +328,7 @@ class CatalogoBasicos extends StatelessWidget {
                   color: Colors.red,
                   strokeWidth: 3,
                   strokeCap: StrokeCap.round, // puntas redondeadas
-                  backgroundColor: Colors.grey.shade200,
+                  backgroundColor: const Color(0xFFEEEEEE),
                 ),
               ),
 
