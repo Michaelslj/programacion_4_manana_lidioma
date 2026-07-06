@@ -2,8 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_shop_app/presentation/screens/auth/profile_screen.dart';
 import 'package:flutter_shop_app/presentation/screens/cart/cart_screen.dart';
 import 'package:flutter_shop_app/presentation/screens/catalog/productdetailscreen.dart';
+import 'package:flutter_shop_app/presentation/screens/orders/orderdetailscreen.dart';
+import 'package:flutter_shop_app/presentation/screens/orders/orders_screen.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/model/auth_state.dart';
 import '../providers/auth_provider.dart';
@@ -35,7 +38,8 @@ class _PlaceholderScreen extends ConsumerWidget {
         ],
       ),
       body: Center(
-        child: Text(title, style: const TextStyle(color: Color(0xFF8888AA), fontSize: 16)),
+        child: Text(title,
+            style: const TextStyle(color: Color(0xFF8888AA), fontSize: 16)),
       ),
     );
   }
@@ -46,65 +50,92 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     refreshListenable: _AuthStateListenable(ref),
     redirect: (context, state) {
-      final auth     = ref.read(authProvider);
+      final auth = ref.read(authProvider);
       final location = state.matchedLocation;
 
-      if (auth.isChecking)        return null;
+      if (auth.isChecking) return null;
 
       final isAuthRoute = location == '/login' || location == '/register';
 
       if (!auth.isAuthenticated && !isAuthRoute) return '/login';
-      if ( auth.isAuthenticated &&  isAuthRoute) return auth.isStaff ? '/admin' : '/';
-      if ( auth.isAuthenticated && !auth.isStaff && location.startsWith('/admin')) return '/';
+      if (auth.isAuthenticated && isAuthRoute)
+        return auth.isStaff ? '/admin' : '/';
+      if (auth.isAuthenticated &&
+          !auth.isStaff &&
+          location.startsWith('/admin')) return '/';
 
       return null;
     },
     routes: [
       // ── Auth ──────────────────────────────────────────────
-      GoRoute(path: '/login',    builder: (_, __) => const LoginScreen()),
+      GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
 
       // ── Zona pública con BottomNavBar ──────────────────────
       ShellRoute(
         builder: (_, __, child) => PublicShell(child: child),
         routes: [
-          GoRoute(path: '/',        builder: (_, __) => const HomeScreen()),
+          GoRoute(path: '/', builder: (_, __) => const HomeScreen()),
           GoRoute(path: '/catalog', builder: (_, __) => const CatalogScreen()),
           GoRoute(
             path: '/cart',
             builder: (_, __) => const CartScreen(),
           ),
           GoRoute(
-            path:    '/product/:id',
-            builder: (_, s) => _PlaceholderScreen('Detalle #${s.pathParameters['id']} — M5'),
+            path: '/catalog',
+            builder: (_, __) => const CatalogScreen(),
+            routes: [
+              GoRoute(
+                path: ':id', // /catalog/1 → id=1
+                builder: (_, state) {
+                  final id = int.parse(state.pathParameters['id']!);
+                  return ProductDetailScreen(productId: id);
+                },
+              ),
+            ],
           ),
-                GoRoute(
-        path: '/catalog',
-        builder: (_, __) => const CatalogScreen(),
-        routes: [
           GoRoute(
-            path: ':id', // /catalog/1 → id=1
-            builder: (_, state) {
-              final id = int.parse(state.pathParameters['id']!);
-              return ProductDetailScreen(productId: id);
-            },
+            path: '/product/:id',
+            builder: (_, s) =>
+                _PlaceholderScreen('Detalle #${s.pathParameters['id']} — M5'),
           ),
-        ],
-      ),
-          GoRoute(path: '/cart',    builder: (_, __) => const _PlaceholderScreen('Carrito — M5')),
-          GoRoute(path: '/orders',  builder: (_, __) => const _PlaceholderScreen('Mis pedidos — M6')),
-          GoRoute(path: '/orders/:id', builder: (_, s) => _PlaceholderScreen('Pedido #${s.pathParameters['id']} — M6')),
-          GoRoute(path: '/profile', builder: (_, __) => const _PlaceholderScreen('Perfil — M6')),
+          GoRoute(
+            path: '/orders',
+            builder: (_, __) => const OrdersScreen(),
+          ),
+          GoRoute(
+            path: '/orders/:id',
+            builder: (_, s) => OrderDetailScreen(
+              orderId: int.parse(s.pathParameters['id']!),
+            ),
+          ),
+          GoRoute(
+            path: '/profile',
+            builder: (_, __) => const ProfileScreen(),
+          ),
         ],
       ),
 
       // ── Admin ─────────────────────────────────────────────
-      GoRoute(path: '/admin',              builder: (_, __) => const _PlaceholderScreen('Dashboard — M8')),
-      GoRoute(path: '/admin/categories',   builder: (_, __) => const _PlaceholderScreen('Categorías — M9')),
-      GoRoute(path: '/admin/products',     builder: (_, __) => const _PlaceholderScreen('Productos — M10')),
-      GoRoute(path: '/admin/orders',       builder: (_, __) => const _PlaceholderScreen('Pedidos admin — M11')),
-      GoRoute(path: '/admin/orders/:id',   builder: (_, s) => _PlaceholderScreen('Pedido admin #${s.pathParameters['id']} — M11')),
-      GoRoute(path: '/admin/users',        builder: (_, __) => const _PlaceholderScreen('Usuarios — M12')),
+      GoRoute(
+          path: '/admin',
+          builder: (_, __) => const _PlaceholderScreen('Dashboard — M8')),
+      GoRoute(
+          path: '/admin/categories',
+          builder: (_, __) => const _PlaceholderScreen('Categorías — M9')),
+      GoRoute(
+          path: '/admin/products',
+          builder: (_, __) => const _PlaceholderScreen('Productos — M10')),
+      GoRoute(
+          path: '/admin/orders',
+          builder: (_, __) => const _PlaceholderScreen('Pedidos admin — M11')),
+      GoRoute(
+          path: '/admin/orders/:id',
+          builder: (_, s) => _PlaceholderScreen(
+              'Pedido admin #${s.pathParameters['id']} — M11')),
+      GoRoute(
+          path: '/admin/users',
+          builder: (_, __) => const _PlaceholderScreen('Usuarios — M12')),
     ],
   );
 });
