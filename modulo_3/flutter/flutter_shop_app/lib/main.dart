@@ -11,21 +11,28 @@ import 'theme/app_colors.dart';
 import 'data/repository/category_repository_impl.dart';
 import 'domain/model/category.dart';
 
+// lib/main.dart
+import 'presentation/navigation/app_router.dart';
+
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
   runApp(const ProviderScope(child: FlutterShopApp()));
 }
 
-class FlutterShopApp extends StatelessWidget {
+class FlutterShopApp extends ConsumerWidget {
   const FlutterShopApp({super.key});
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    title:            AppConfig.appName,
-    debugShowCheckedModeBanner: false,
-    theme:            AppTheme.dark,
-    home:             const VerificationScreen(),
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    return MaterialApp.router(
+      title:                'Flutter Shop App',
+      debugShowCheckedModeBanner: false,
+      theme:                AppTheme.dark,
+      routerConfig:         router,
+    );
+  }
 }
 
 // Provider de verificación
