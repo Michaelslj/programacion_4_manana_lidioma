@@ -1,5 +1,6 @@
 // lib/domain/model/order.dart
 
+// ignore: unused_import
 import 'package:flutter/material.dart';
 
 enum OrderStatus {
