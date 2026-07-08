@@ -83,8 +83,8 @@ class CatalogNotifier extends StateNotifier<CatalogState> {
 
   Future<void> loadCategories() async {
     try {
-      final cats = await _categoryDs.getCategories();
-      state = state.copyWith(categories: cats);
+      final result = await _categoryDs.getCategories();
+      state = state.copyWith(categories: result.results);
     } catch (e) {
       // No fallar si no cargan categorías
     }

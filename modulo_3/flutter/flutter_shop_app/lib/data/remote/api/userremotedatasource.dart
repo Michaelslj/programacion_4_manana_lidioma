@@ -22,7 +22,13 @@ class PaginatedUsers {
 }
 
 abstract class UserRemoteDatasource {
-  Future<PaginatedUsers>       getUsers({String? search, bool? isStaff, bool? isActive});
+  Future<PaginatedUsers> getUsers({
+    String? search,
+    bool? isStaff,
+    bool? isActive,
+    int? page,
+    int? pageSize,
+  });
   Future<User>                 createUser(Map<String, dynamic> payload);
   Future<User>                 updateUser(int id, Map<String, dynamic> payload);
   Future<void>                 deleteUser(int id);
@@ -35,12 +41,20 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
   UserRemoteDatasourceImpl(this._dio);
 
   @override
-  Future<PaginatedUsers> getUsers({String? search, bool? isStaff, bool? isActive}) async {
+  Future<PaginatedUsers> getUsers({
+    String? search,
+    bool? isStaff,
+    bool? isActive,
+    int? page,
+    int? pageSize,
+  }) async {
     try {
       final params = <String, dynamic>{
         if (search   != null) 'search':    search,
         if (isStaff  != null) 'is_staff':  isStaff,
         if (isActive != null) 'is_active': isActive,
+        if (page     != null) 'page':       page,
+        if (pageSize != null) 'page_size':  pageSize,
       };
       final res = await _dio.get('/users/', queryParameters: params);
       return PaginatedUsers.fromJson(res.data as Map<String, dynamic>);
