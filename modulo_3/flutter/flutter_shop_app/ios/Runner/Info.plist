@@ -43,6 +43,11 @@
 					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
 					<key>UISceneStoryboardFile</key>
 					<string>Main</string>
+					<!-- ios/Runner/Info.plist -->
+					<key>NSPhotoLibraryUsageDescription</key>
+					<string>Necesitamos acceso a tu galería para seleccionar imágenes.</string>
+					<key>NSCameraUsageDescription</key>
+					<string>Necesitamos acceso a la cámara para tomar fotos.</string>
 				</dict>
 			</array>
 		</dict>
