@@ -1,4 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native'
+// En React web usarías <div> y <span>.
+// En React Native usas <View> y <Text> — el resultado es nativo real.
+
+import { Text, View } from "react-native"
 
 interface TarjetaServidorProps {
   nombre: string
@@ -7,39 +10,12 @@ interface TarjetaServidorProps {
   puerto: number
 }
 
-export default function TarjetaServidor({ nombre, ip, sistema, puerto }: TarjetaServidorProps) {
+export function TarjetaServidor({ nombre, ip, sistema, puerto }: TarjetaServidorProps) {
   return (
-    <View style={styles.tarjeta}>
-      <Text style={styles.nombreServidor}>{nombre}</Text>
-      <Text style={styles.datoDireccion}>{ip}:{puerto}</Text>
-      <Text style={styles.datoSistema}>{sistema}</Text>
+    <View>
+      <Text>{nombre}</Text>
+      <Text>{ip} · {sistema}</Text>
+      <Text>{puerto}</Text>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  tarjeta: {
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 2,
-    marginVertical: 8,
-  },
-  nombreServidor: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  datoDireccion: {
-    fontSize: 14,
-    color: '#333',
-    marginBottom: 2,
-  },
-  datoSistema: {
-    fontSize: 13,
-    color: '#666',
-  },
-})
