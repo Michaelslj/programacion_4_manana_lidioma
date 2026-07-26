@@ -1,5 +1,3 @@
-//tarjeta_log_mp.dart
-
 import 'package:flutter/material.dart';
 
 class TarjetaLog extends StatelessWidget {

@@ -1,5 +1,3 @@
-//fila_estado-mp.dart
-
 import 'package:flutter/material.dart';
 
 class FilaEstado extends StatelessWidget {

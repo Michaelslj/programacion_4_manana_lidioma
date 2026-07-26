@@ -1,5 +1,3 @@
-//avatar_badge_mp.dart
-
 import 'package:flutter/material.dart';
 
 class AvatarBadge extends StatelessWidget {
